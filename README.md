@@ -76,7 +76,8 @@ An interactive console starts alongside the audio. Type `help`. Commands:
 fx <chorus|delay|reverb|bitcrush> <on|off|toggle>
 wave1/wave2 <sine|square|saw|triangle>
 level1/level2 <0-1>  # oscillator mix level (osc2 starts at 0)
-fm <0-1>            # oscillator-2 FM amount
+mode <off|fm|am|ring|sync>  # how osc1 modulates osc2
+mod <0-1>           # modulation amount (alias: fm)
 tune2 <-12..12>     # oscillator-2 coarse semitones
 cents2 <-0.5..0.5>  # oscillator-2 fine cents
 gain <0-1.2>
@@ -86,11 +87,26 @@ alloff | status | quit
 > To hear the second oscillator, raise its level: `level2 0.5` (it defaults to 0
 > so you get a pure osc-1 tone until you turn it up).
 
+### Modulation modes (osc1 -> osc2)
+
+`mode` selects how osc1's output drives osc2. `mod` is the amount.
+
+| Mode | Behavior |
+|---|---|
+| `off` | osc2 runs free, unaffected by osc1 |
+| `fm` | osc1 phase-modulates osc2 -> sidebands; osc2 carrier is always on |
+| `am` | osc1 amplitude-modulates osc2; carrier stays present (never fully silent) |
+| `ring` | ring/balanced modulation, carrier suppressed: osc2 is **silent whenever osc1 is silent** |
+| `sync` | hard sync: osc1's cycle resets osc2's phase; `mod` blends free <-> synced |
+
+`ring` is the "osc2 doesn't play while osc1 is silent" behavior. Selecting any
+mode other than `off` while `mod` is 0 auto-raises it to 0.7.
+
 ## Default MIDI CC map
 
 | Control | Action |
 |---|---|
-| CC 1 | FM depth (0..1) |
+| CC 1 | modulation amount (0..1) |
 | CC 7 | master volume |
 | CC 20 | toggle Chorus |
 | CC 21 | toggle Delay |
@@ -102,6 +118,7 @@ alloff | status | quit
 | CC 27 | osc 2 fine tune (−0.5..+0.5 cents) |
 | CC 28 | osc 2 level (0..1) |
 | CC 29 | osc 1 level (0..1) |
+| CC 30 | modulation mode (zones: off / fm / am / ring / sync) |
 | Pitch wheel | pitch bend (±2 semitones) |
 
 Toggle CCs act on press (value ≥ 64) with edge detection.
@@ -110,7 +127,7 @@ Toggle CCs act on press (value ≥ 64) with edge detection.
 
 ```
 note ─▶ ADSR ─▶ osc1 ──┬────────────────────────────▶ Σ ─▶ chorus ─▶ delay ─▶ reverb ─▶ bitcrush ─▶ soft clip ─▶ out
-                       └─(phase mod ×FM depth)─▶ osc2 ─┘
+                       └─(mode: fm/am/ring/sync)─▶ osc2 ─┘
 ```
 
 `osc2` pitch = note pitch × 2^((semitones + cents/100)/12).
@@ -118,7 +135,7 @@ note ─▶ ADSR ─▶ osc1 ──┬──────────────
 ## Offline render (no audio device)
 
 ```bash
-python render_demo.py --out demo.wav --effects reverb,delay --wave1 saw --fm 0.4 --level2 0.6
+python render_demo.py --out demo.wav --effects reverb,delay --wave1 saw --mode ring --fm 0.7 --level2 0.6
 ```
 
 Renders a 12-note chord to a WAV file using only NumPy and the standard library.
