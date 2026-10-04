@@ -1,5 +1,7 @@
 # midi-synth
 
+Python MIDI synth. Built by Jilly @ Hackers In The Loop
+
 A real-time Python MIDI synthesizer. It listens to **any** MIDI input device, plays
 the notes it receives, and runs them through a dual-oscillator voice engine plus a
 toggleable effects chain.
