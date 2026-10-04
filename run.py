@@ -52,7 +52,7 @@ def list_devices():
 def console_loop(engine):
     help_text = (
         "commands: fx <chorus|delay|reverb|bitcrush> <on|off|toggle>, "
-        "wave1/wave2 <sine|square|saw|triangle>, fm <0-1>, "
+        "wave1/wave2 <sine|square|saw|triangle>, level1/level2 <0-1>, fm <0-1>, "
         "tune2 <-12..12>, cents2 <-0.5..0.5>, gain <0-1.2>, alloff, status, quit"
     )
     print(help_text)
@@ -78,6 +78,9 @@ def console_loop(engine):
                 engine.all_notes_off()
             elif cmd == "fm":
                 engine.set_fm_depth(float(parts[1]))
+            elif cmd in ("level1", "level2"):
+                osc = 1 if cmd == "level1" else 2
+                engine.set_osc_level(osc, float(parts[1]))
             elif cmd == "tune2":
                 engine.set_detune2(float(parts[1]))
             elif cmd == "cents2":

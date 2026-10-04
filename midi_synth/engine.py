@@ -67,6 +67,14 @@ class SynthEngine:
             self.params["osc1_level"] = min(max(osc1_level, 0.0), 1.0)
             self.params["osc2_level"] = min(max(osc2_level, 0.0), 1.0)
 
+    def set_osc_level(self, osc, level):
+        with self.lock:
+            key = "osc%d_level" % osc
+            if key not in self.params:
+                raise KeyError(key)
+            self.params[key] = min(max(level, 0.0), 1.0)
+            return self.params[key]
+
     def set_fm_depth(self, depth):
         with self.lock:
             self.params["fm_depth"] = min(max(depth, 0.0), 1.0)

@@ -1,7 +1,5 @@
 # midi-synth
 
-Python MIDI synth. Built by Jilly @ Hackers In The Loop
-
 A real-time Python MIDI synthesizer. It listens to **any** MIDI input device, plays
 the notes it receives, and runs them through a dual-oscillator voice engine plus a
 toggleable effects chain.
@@ -44,12 +42,16 @@ An interactive console starts alongside the audio. Type `help`. Commands:
 ```
 fx <chorus|delay|reverb|bitcrush> <on|off|toggle>
 wave1/wave2 <sine|square|saw|triangle>
+level1/level2 <0-1>  # oscillator mix level (osc2 starts at 0)
 fm <0-1>            # oscillator-2 FM amount
 tune2 <-12..12>     # oscillator-2 coarse semitones
 cents2 <-0.5..0.5>  # oscillator-2 fine cents
 gain <0-1.2>
 alloff | status | quit
 ```
+
+> To hear the second oscillator, raise its level: `level2 0.5` (it defaults to 0
+> so you get a pure osc-1 tone until you turn it up).
 
 ## Default MIDI CC map
 
@@ -65,6 +67,8 @@ alloff | status | quit
 | CC 25 | osc 2 waveform (same zones) |
 | CC 26 | osc 2 coarse tune (−12..+12 semitones) |
 | CC 27 | osc 2 fine tune (−0.5..+0.5 cents) |
+| CC 28 | osc 2 level (0..1) |
+| CC 29 | osc 1 level (0..1) |
 | Pitch wheel | pitch bend (±2 semitones) |
 
 Toggle CCs act on press (value ≥ 64) with edge detection.

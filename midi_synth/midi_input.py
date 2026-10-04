@@ -26,6 +26,8 @@ class MidiInput:
             25: lambda v: self._cc_wave(2, v),
             26: self._cc_tune2,
             27: self._cc_cents2,
+            28: lambda v: self.engine.set_osc_level(2, v / 127.0),
+            29: lambda v: self.engine.set_osc_level(1, v / 127.0),
         }
 
     @staticmethod
