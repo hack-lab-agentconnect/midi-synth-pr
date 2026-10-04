@@ -34,10 +34,41 @@ sudo apt install libportaudio2
 ## Run
 
 ```bash
-python run.py --list            # list MIDI inputs and audio outputs
-python run.py                   # listen on all MIDI ports, output to default device
+python run.py --list            # list MIDI inputs, host APIs and audio outputs
+python run.py                   # listen on all MIDI ports, auto-pick the lowest-latency output
 python run.py --input "Launchkey" --channel 1
 ```
+
+## Low latency on Windows (ASIO / WASAPI)
+
+By default PortAudio picks the **MME** host API, which can add ~100–200 ms of
+note-to-sound delay. `run.py` now auto-selects the fastest available output, in
+this order: **ASIO → WASAPI (exclusive) → WDM-KS → system default**, and prints
+the chosen backend plus the actual latency at startup:
+
+```
+Output: Focusrite USB ASIO via ASIO (exclusive)
+Latency: 5.3 ms output @ 48000 Hz, block 256
+```
+
+- `--list` shows every host API and device, so you can see whether ASIO exists.
+- **ASIO** is opt-in at the PortAudio level. The pip `sounddevice` wheel bundles
+  an ASIO-enabled DLL, but it stays off until `SD_ENABLE_ASIO` is set *before*
+  `sounddevice` is imported. `run.py` does this for you on Windows. (Use
+  `--no-asio` to disable; this opt-in does not work with the conda package.)
+- **WASAPI exclusive** mode is requested automatically and falls back to shared
+  mode if the device refuses it.
+- Force things explicitly:
+
+```bash
+python run.py --hostapi asio
+python run.py --audio-device "Focusrite USB ASIO"
+python run.py --hostapi wasapi          # WASAPI shared
+python run.py --latency low
+```
+
+If ASIO is not listed, install your interface's vendor ASIO driver first
+(or ASIO4ALL). If audio crackles, raise `--blocksize` (e.g. 512).
 
 An interactive console starts alongside the audio. Type `help`. Commands:
 
