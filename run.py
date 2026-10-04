@@ -58,13 +58,23 @@ def list_devices():
         print("Audio outputs: (could not query audio: %s)" % exc)
 
 
+HELP_TEXT = """commands:
+  fx <chorus|delay|reverb|bitcrush> <on|off|toggle>
+  wave1/wave2 <sine|square|saw|triangle>
+  level1/level2 <0-1>        oscillator mix level (osc2 starts at 0)
+  mode <off|fm|am|ring|sync> how osc1 modulates osc2
+  mod <0-1>                  modulation amount (alias: fm)
+  tune2 <-12..12>            osc2 coarse semitones
+  cents2 <-0.5..0.5>         osc2 fine cents
+  gain <0-1.2>               master volume
+  alloff                     release all held notes
+  status                     show current settings
+  help                       show this help
+  quit                       exit (Ctrl+C also works)"""
+
+
 def console_loop(engine):
-    help_text = (
-        "commands: fx <chorus|delay|reverb|bitcrush> <on|off|toggle>, "
-        "wave1/wave2 <sine|square|saw|triangle>, level1/level2 <0-1>, "
-        "mode <off|fm|am|ring|sync>, mod <0-1> (FM/AM/ring depth, alias fm), "
-        "tune2 <-12..12>, cents2 <-0.5..0.5>, gain <0-1.2>, alloff, status, quit"
-    )
+    help_text = HELP_TEXT
     print(help_text)
     while True:
         try:
